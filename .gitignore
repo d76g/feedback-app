@@ -1,0 +1,16 @@
+# Node.js dependencies
+node_modules/
+dist/
+coverage/
+.nyc_output/
+
+# IDE / Editor settings
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env*
