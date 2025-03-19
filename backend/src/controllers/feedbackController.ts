@@ -1,44 +1,41 @@
 import { Request, Response } from "express";
-import { CreationAttributes } from "sequelize";
-import Feedback from "../models/feedback.model";
-import User from "../models/user.model";
-import Application from "../models/application.model";
+import db from "../models"; 
 
+const  {Feedback} = db;// Import centralized db
 // ✅ Add a new feedback
-export const addFeedback = async (req: Request, res: Response) : Promise<void> => {
-    try {
-      const { userId, applicationId, note, rating } = req.body;
-  
-      if (!userId || !applicationId || !rating) {
-        res.status(400).json({ message: "Missing required fields" });
-        return;
-      }
-  
-      // ✅ Corrected type inference
-      const feedbackData: CreationAttributes<Feedback> = {
-        userId,
-        applicationId,
-        note,
-        rating,
-      };
-  
-      const feedback = await Feedback.create(feedbackData);
-  
-      res.status(201).json(feedback);
-    } catch (error) {
-      res.status(500).json({ message: "Error creating feedback", error });
-    }
-  };
-
-// ✅ Get all feedback
-export const getAllFeedback = async (_req: Request, res: Response) : Promise<void> => {
+export const addFeedback = async (req: Request, res: Response): Promise<void> => {
   try {
-    const feedbackList = await Feedback.findAll({
-      include: [User, Application],
+    const { userId, applicationId, note, rating } = req.body;
+
+    if (!userId || !applicationId || !rating) {
+      res.status(400).json({ message: "Missing required fields" });
+      return;
+    }
+
+    const newFeedback = await Feedback.create({
+      userId,
+      applicationId,
+      note,
+      rating,
     });
 
-    res.status(200).json(feedbackList);
+    const feedbackWithUser = await Feedback.findByPk(newFeedback.id, {
+      include: [
+        { model: db.User, attributes: ["id", "username"] },
+        { model: db.Comment },
+      ],
+    });
+
+    // Broadcast via WebSocket
+    const io = req.app.get("io");
+    io.emit("updateFeedback", feedbackWithUser);
+
+    //  Respond to API
+    res.status(201).json(feedbackWithUser);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching feedback", error });
+    console.error("❌ Error creating feedback:", error);
+    res.status(500).json({ message: "Error creating feedback", error });
   }
 };
+
+

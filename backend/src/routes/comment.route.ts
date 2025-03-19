@@ -1,17 +1,17 @@
 import express from "express";
 import {
   postComment,
-  getCommentsByFeedback,
   upvoteComment,
   downvoteComment,
+  getCommentsByFeedbackId,
 } from "../controllers/commentController";
 
 const router = express.Router();
 
 // ✅ Comment Routes
-router.post("/feedback/:feedbackId/comment", postComment);
-router.get("/feedback/:feedbackId/comments", getCommentsByFeedback);
+router.post("/comment/:feedbackId", postComment);
 router.post("/comment/:commentId/upvote", upvoteComment);
 router.post("/comment/:commentId/downvote", downvoteComment);
+router.get("/comment/:feedbackId", getCommentsByFeedbackId);
 
 export default router;

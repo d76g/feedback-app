@@ -1,63 +1,68 @@
-import { DataTypes, Model, InferAttributes, InferCreationAttributes, ForeignKey, CreationOptional } from "sequelize";
-import sequelize from "../config/database";
-import Feedback from "./feedback.model";
-import User from "./user.model";
+import { DataTypes, Model, InferAttributes, InferCreationAttributes, Sequelize, ForeignKey, CreationOptional } from "sequelize";
 
 class Comment extends Model<InferAttributes<Comment>, InferCreationAttributes<Comment>> {
-    public id!: CreationOptional<number>;
-    public text!: string;
-    public upVotes!: CreationOptional<number>;
-    public downVotes!: CreationOptional<number>;
-    public readonly createdAt!: CreationOptional<Date>;
-    public readonly updatedAt!: CreationOptional<Date>;
+  public id!: CreationOptional<number>;
+  public text!: string;
+  public upVotes!: CreationOptional<number>;
+  public downVotes!: CreationOptional<number>;
+  public readonly createdAt!: CreationOptional<Date>;
+  public readonly updatedAt!: CreationOptional<Date>;
 
-    // Foreign Keys
-    public feedbackId!: ForeignKey<Feedback["id"]>;
-    public userId!: ForeignKey<User["id"]>;
-}
+  // Foreign Keys (store IDs only)
+  public feedbackId!: ForeignKey<number>;
+  public userId!: ForeignKey<number>;
 
-// Initialize model
-Comment.init(
-    {
+  // ✅ Define associations
+  public static associate(models: any): void {
+    Comment.belongsTo(models.Feedback, {
+      foreignKey: "feedbackId",
+    });
+    Comment.belongsTo(models.User, {
+      foreignKey: "userId",
+    });
+  }
+
+  // ✅ Define initialization separately
+  public static initModel(sequelize: Sequelize): void {
+    Comment.init(
+      {
         id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true,
+          type: DataTypes.INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
         },
         text: {
-            type: DataTypes.TEXT,
-            allowNull: false,
+          type: DataTypes.TEXT,
+          allowNull: false,
         },
         upVotes: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0,
-            field: "up_votes", // Maps to database field
+          type: DataTypes.INTEGER,
+          defaultValue: 0,
+          field: "up_votes",
         },
         downVotes: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0,
-            field: "down_votes", // Maps to database field
+          type: DataTypes.INTEGER,
+          defaultValue: 0,
+          field: "down_votes",
         },
         createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW,
         },
         updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW,
         },
-    },
-    {
+      },
+      {
         sequelize,
         tableName: "comments",
         timestamps: true,
-    }
-);
-
-// Define associations
-Comment.belongsTo(Feedback, { foreignKey: "feedbackId" });
-Comment.belongsTo(User, { foreignKey: "userId" });
+      }
+    );
+  }
+}
 
 export default Comment;

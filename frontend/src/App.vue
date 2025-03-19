@@ -1,5 +1,12 @@
+<script setup>
+import { RouterView, RouterLink } from 'vue-router';
+import { useWebSocket } from './composables/useWebSocket';
+
+useWebSocket();
+</script>
+
 <template>
-  <div class="bg-blue-500 text-white p-4 rounded-lg">
-    If you see this, Tailwind is working! 🎉
-  </div>
+    <main class="flex-grow">
+      <RouterView />
+    </main>
 </template>

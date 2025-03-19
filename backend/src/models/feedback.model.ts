@@ -1,60 +1,61 @@
-import { DataTypes, Model, InferAttributes, InferCreationAttributes, ForeignKey, CreationOptional } from "sequelize";
-import sequelize from "../config/database";
-import User from "./user.model";
-import Application from "./application.model";
+import { DataTypes, Model, InferAttributes, InferCreationAttributes, Sequelize, ForeignKey, CreationOptional } from "sequelize";
 
 class Feedback extends Model<InferAttributes<Feedback>, InferCreationAttributes<Feedback>> {
-    public id!: CreationOptional<number>; // ✅ Allows Sequelize to auto-generate ID
+    public id!: CreationOptional<number>;
     public note!: string | null;
     public rating!: number;
-    public readonly createdAt!: CreationOptional<Date>; // ✅ Allows Sequelize to auto-generate timestamps
+    public readonly createdAt!: CreationOptional<Date>;
     public readonly updatedAt!: CreationOptional<Date>;
 
     // Foreign Keys
-    public userId!: ForeignKey<User["id"]>;
-    public applicationId!: ForeignKey<Application["id"]>;
-}
+    public userId!: ForeignKey<number>;
+    public applicationId!: ForeignKey<number>;
 
-// Initialize model
-Feedback.init(
-    {
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true,
-        },
-        note: {
-            type: DataTypes.TEXT,
-            allowNull: true,
-        },
-        rating: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            validate: {
-                min: 1,
-                max: 5,
-            },
-        },
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
-        },
-        updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
-        },
-    },
-    {
-        sequelize,
-        tableName: "feedback",
-        timestamps: true,
+    static associate(models: any) {
+        Feedback.belongsTo(models.User, { foreignKey: "userId"});
+        Feedback.belongsTo(models.Application, { foreignKey: "applicationId" });
+        Feedback.hasMany(models.Comment, { foreignKey: "feedbackId" });
     }
-);
 
-// Define associations
-Feedback.belongsTo(User, { foreignKey: "userId" });
-Feedback.belongsTo(Application, { foreignKey: "applicationId" });
+    static initModel(sequelize: Sequelize) {
+        Feedback.init(
+            {
+                id: {
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
+                    primaryKey: true,
+                },
+                note: {
+                    type: DataTypes.TEXT,
+                    allowNull: true,
+                },
+                rating: {
+                    type: DataTypes.INTEGER,
+                    allowNull: false,
+                    validate: {
+                        min: 1,
+                        max: 5,
+                    },
+                },
+                createdAt: {
+                    type: DataTypes.DATE,
+                    allowNull: false,
+                    defaultValue: DataTypes.NOW,
+                },
+                updatedAt: {
+                    type: DataTypes.DATE,
+                    allowNull: false,
+                    defaultValue: DataTypes.NOW,
+                },
+            },
+            {
+                sequelize,
+                tableName: "feedback",
+                timestamps: true,
+            }
+        );
+        return Feedback;
+    }
+}
 
 export default Feedback;

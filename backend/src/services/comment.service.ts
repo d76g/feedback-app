@@ -1,4 +1,5 @@
 import Comment from "../models/comment.model";
+import db from "../models"; 
 
 class CommentService {
     static async createComment(data: { userId: number, feedbackId: number, text: string }) {
@@ -14,7 +15,9 @@ class CommentService {
     }
     // ✅ Increment upvotes
     static async incrementUpvote(commentId: number) {
-        const comment = await Comment.findByPk(commentId);
+        const comment = await Comment.findByPk(commentId, {
+            include: [{ model: db.User, attributes: ["id", "username"] }],
+        });
         if (!comment) throw new Error("Comment not found");
 
         await comment.increment("upVotes");
@@ -23,7 +26,9 @@ class CommentService {
 
     // ✅ Increment downvotes
     static async incrementDownvote(commentId: number) {
-        const comment = await Comment.findByPk(commentId);
+        const comment = await Comment.findByPk(commentId, {
+            include: [{ model: db.User, attributes: ["id", "username"] }],
+        });
         if (!comment) throw new Error("Comment not found");
 
         await comment.increment("downVotes");
