@@ -6,6 +6,8 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "migrate": "npx ts-node ./node_modules/.bin/sequelize-cli db:migrate",
+    "seed": "npx ts-node ./node_modules/.bin/sequelize-cli db:seed:all",
     "sequelize": "sequelize-cli --config src/config/config.js --migrations-path src/migrations --models-path src/models --seeders-path src/seeders"
   },
   "keywords": [],

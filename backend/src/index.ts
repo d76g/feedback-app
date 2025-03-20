@@ -62,7 +62,7 @@ app.use("/api", feedbackRoutes);
 app.use("/api", commentRoutes);
 app.use("/api", applicationRoutes);
 app.use("/api", authRoutes);
-app.get("/", (_req, res) => {
+app.get("/api", (_req, res) => {
   res.send("🚀 Server is running!");
 });
 

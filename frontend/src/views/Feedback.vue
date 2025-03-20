@@ -22,7 +22,7 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 const feedbackStore = useFeedbackStore();
 const applicationName = route.params.app;
-const showForm = ref(true);
+const showForm = ref(false);
 onMounted(() => {
   feedbackStore.listenToWebSocket();
 
