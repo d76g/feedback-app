@@ -122,4 +122,5 @@ npm run dev --prefix frontend
 
 Migrations & models are in `/backend/src/migrations` & `/backend/src/models`.
 
-
+## Login
+- Username is case-sensitive

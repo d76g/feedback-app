@@ -5,15 +5,15 @@
       class="w-[40rem] bg-gray-100 max-w-sm mx-auto p-6 rounded-lg shadow-md dark:bg-gray-800 dark:text-white"
     >
       <div class="mb-5">
-        <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Your Username
+        <label for="username" class="block mb-2  font-medium text-gray-900 dark:text-white">
+          Your Username <span class="text-xs text-gray-400">- case sensitive</span>
         </label>
         <input
           type="text"
           id="username"
           v-model="username"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="Sven"
+          placeholder="Sven or Bashar"
           required
         />
       </div>
@@ -59,7 +59,11 @@ async function handleLogin() {
     // Redirect to the Home page
     router.push('/home')
   } catch (error) {
-    console.error(error);
+    if (error.response.status === 404) {
+      alert('Invalid username. Please try again.');
+    } else {
+      alert('An error occurred. Please try again.');
+    }
   }
 
 };
